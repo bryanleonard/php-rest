@@ -14,14 +14,40 @@ class AuthController extends Controller
         $email = $request->input('email');
         $password = $request->input('password');
 
-		return 'store works';
+        $user = [
+            'name' => $name,
+            'email' => $email,
+            'password' => $password,
+            'signin' => [
+                'href' => 'api/v1/user/signin',
+                'method' => 'POST',
+                'params' => 'email, password'
+            ]
+        ];
+
+        $response = [
+            'msg' => 'User created',
+            'user' => $user
+        ];
+
+        return response()->json($response, 201);
 	}
 
 	public function signin(Request $request)
 	{
 		$email = $request->input('email');
         $password = $request->input('password');
+        $user = [
+            'name' => 'Name',
+            'email' => $email,
+            'password' => $password
+        ];
 
-        return 'signin works';
+        $response = [
+            'msg' => 'User signed in',
+            'user' => $user
+        ];
+
+        return response()->json($response, 200);
 	}
 }

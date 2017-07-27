@@ -1,4 +1,5 @@
 
+##  HTTP Methods and Controller Actions
     HTTP Method and URL         Controller Action
     --------------------        --------------------
     GET /post                   index [show all posts]
@@ -10,9 +11,28 @@
     DELETE /post/{post}         desto [delete post on server]
 
 
+## RESTful Response options
+    // HTML Page / View
+    return response()->view('index');
+    
+    // JSON
+    return response()->json([
+        'msg' => 'my message',
+        'post' => [
+            'title' => $post->title
+        ]
+    ], 200);
+    
+    // File download
+    
+    return response()->download($pathToFile);
 
-
-
+### Basic repsonse content
+- Message: Sucess or failure message
+- Data: Optionally attach retrieved data
+- Link: Optionally attach link to related resources
+ 
+**For example:** User creates a post - reponse contains a status message, a data packet and a link to the newly created post, ie, the RESTful route GET for that individual post.
 
 
 
