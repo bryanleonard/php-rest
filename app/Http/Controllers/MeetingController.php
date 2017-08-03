@@ -70,14 +70,6 @@ class MeetingController extends Controller
 		$time = $request->input('time');
 		$user_id = $request->input('user_id');
 
-		// $meeting = [
-		//     "title" => $title,
-		//     "description" => $description,
-		//     "time" => $time,
-		//     "view_meeting" => "api/v1/meeting/1",
-		//     "method" => "GET"
-		// ];
-
 		$meeting = new Meeting([
 			'time' => Carbon::createFromFormat('YmdHie', $time),
 			'title' => $title,
@@ -98,11 +90,6 @@ class MeetingController extends Controller
 		}
 
 		return response()->json($message, 201);
-
-		// return "it still works";
-		// return response()->json([
-		//     'title' => 'post created'
-		// ]);
 	}
 
 	/**

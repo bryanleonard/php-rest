@@ -15,7 +15,6 @@ class RegistrationController extends Controller
      */
     public function store(Request $request)
     {
-        
         $this->validate($request, [
             'meeting_id' => 'required',
             'user_id' => 'required'
