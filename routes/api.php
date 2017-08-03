@@ -34,16 +34,6 @@ Route::get('test', function()
 
 Route::group(['prefix' => 'v1'], function() {
 
-
-Route::get('test', function()
-{
-    return array(
-      1 => "expertphp",
-      2 => "demo"
-    );
-});
-
-
 	Route::resource('meeting', 'MeetingController', [
 		'except' => ['edit', 'create']
 	]);
