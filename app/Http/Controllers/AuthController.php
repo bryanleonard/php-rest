@@ -2,40 +2,68 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\User; // dont forget your model!
 use App\Http\Requests;
+use Illuminate\Http\Request;
+
+// use Tymon\JWTAuth\Exceptions\JWTException;
+// use JWTAuth;
 
 class AuthController extends Controller
 {
 	// create a new user
 	public function store(Request $request)
 	{
-		$name = $request->input('name');
+		
+
+return 'it works'
+
+		// change validation messaging in resoures/lang/validation.php
+		$this->validate($request, [
+            'name' => 'required',
+            'email' => 'required|email',
+            'password' => 'required|min:5'
+        ]);
+
+        $name = $request->input('name');
         $email = $request->input('email');
         $password = $request->input('password');
 
-        $user = [
+        $user = new User([
             'name' => $name,
             'email' => $email,
-            'password' => $password,
-            'signin' => [
+            'password' => bcrypt($password)
+        ]);
+
+        if ($user->save()) {
+            $user->signin = [
                 'href' => 'api/v1/user/signin',
                 'method' => 'POST',
                 'params' => 'email, password'
-            ]
-        ];
+            ];
+            $response = [
+                'msg' => 'User created',
+                'user' => $user
+            ];
+            return response()->json($response, 201);
+        }
 
         $response = [
-            'msg' => 'User created',
-            'user' => $user
+            'msg' => 'An error occurred'
         ];
 
-        return response()->json($response, 201);
+        return response()->json($response, 404);
+
 	}
 
 	public function signin(Request $request)
 	{
-		$email = $request->input('email');
+		$this->validate($request, [
+            'email' => 'required|email',
+            'password' => 'required'
+        ]);
+        
+        $email = $request->input('email');
         $password = $request->input('password');
         $user = [
             'name' => 'Name',
