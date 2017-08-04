@@ -18,19 +18,16 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 // Route::get('/{any}', function ($any) {
-
 //     return view('errors');
-
 // })->where('any', '.*');
 
-Route::get('test', function()
+Route::get('v1/test', function()
 {
     return array(
-      1 => "expertphp",
-      2 => "demo"
+      1 => "Item 1",
+      2 => "item 2"
     );
 });
-
 
 Route::group(['prefix' => 'v1'], function() {
 
