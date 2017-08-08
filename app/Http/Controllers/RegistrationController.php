@@ -34,6 +34,9 @@ class RegistrationController extends Controller
 		$meeting_id = $request->input('meeting_id');
 		$user_id = $request->input('user_id');
 
+		$meeting = Meeting::findOrFail($meeting_id);
+		$user = User::findOrFail($user_id);
+
 		$message = [
 			'msg' => 'User is already registered from meeting',
 			'user' => $user,
@@ -72,23 +75,23 @@ class RegistrationController extends Controller
 	public function destroy($id)
 	{
 		$meeting = Meeting::findOrFail($id);
+		$users = $meeting->users();
+		$meeting->users()->detach();
 
-		if (!$user = JWTAuyh::parseToken()->authentication()) {
-			return response()->json(['msg' => 'User not found'], 404);	
+		if (!$meeting->delete()) {
+			foreach ($users as $user) {
+				$meeting->users()->attach($user);
+			}
+
+			return response()->json(['msg' => 'Deletion failed'], 404);
 		}
-
-		if (!$meeting->users()->where('users.id', $user->id)->first()) {
-			return response()->json(['msg' => 'User not registered for meeting, delete not successful'], 401);
-		}
-
-		$meeting->users()->detach($user->id);
 
 		$response = [
 			'msg' => 'User unregistered for meeting',
 			'meeting' => $meeting,
-			'user' => $user,
+			'user' => 'tbd',
 			'register' => [
-				'href' => 'api/v1/meeting/regstration',
+				'href' => 'api/v1/meeting/registration',
 				'method' => 'POST',
 				'params' => 'user_id, meeting_id'
 			]
