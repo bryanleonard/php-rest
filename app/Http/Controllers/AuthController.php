@@ -7,72 +7,74 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use Tymon\JWTAuth\Exceptions\JWTException;
-// use JWTAuth;
+use JWTAuth;
+
 
 class AuthController extends Controller
 {
-    public function store (Request $request) 
-    {
-    	$this->validate($request, [
-    		'name' => 'required',
-    		'email' => 'required|email',
-    		'password' => 'required|min:5'
-    	]);
+	public function store (Request $request) 
+	{
+		$this->validate($request, [
+			'name' => 'required',
+			'email' => 'required|email',
+			'password' => 'required|min:5'
+		]);
 
-    	$name = $request->input('name');
-    	$email = $request->input('email');
-    	$password = $request->input('password');
+		$name = $request->input('name');
+		$email = $request->input('email');
+		$password = $request->input('password');
 
-    	$user = new User([
-    		'name' => $name,
-    		'email' => $email,
-    		'password' => bcrypt($password)
-    	]);
+		$user = new User([
+			'name' => $name,
+			'email' => $email,
+			'password' => bcrypt($password)
+		]);
 
-    	if ($user->save()) {
-    		$user->signin = [
-    			'href' => 'api/v1/user/signin',
-    		 	'method' => 'POST',
-    		 	'params' => 'email, password'	
-    		];
+		if ($user->save()) {
+			$user->signin = [
+				'href' => 'api/v1/user/signin',
+				'method' => 'POST',
+				'params' => 'email, password'	
+			];
 
-    		$response = [
-    			'msg' => "User created",
-    			'user' => $user
-    		];
+			$response = [
+				'msg' => "User created",
+				'user' => $user
+			];
 
-    		return response()->json($response, 201);
-    	}
+			return response()->json($response, 201);
+		}
 
-    	$response = [
-    		'msg' => "An error occurred"
-    	];
+		$response = [
+			'msg' => "An error occurred"
+		];
 
-    	return response()->json($response, 404);
-    }
+		return response()->json($response, 404);
+	}
 
-    public function signin(Request $request)
-    {
-    	$this->validate($request, [
-            'email' => 'required|email',
-            'password' => 'required'
-        ]);
-        
-        $email = $request->input('email');
-        $password = $request->input('password');
-        $user = [
-            'name' => 'Name',
-            'email' => $email,
-            'password' => $password
-        ];
-
-        $response = [
-            'msg' => 'User signed in',
-            'user' => $user
-        ];
-
-        return response()->json($response, 200);
-    }
+	public function signin(Request $request)
+	{
+		$this->validate($request, [
+			'email' => 'required|email',
+			'password' => 'required'
+		]);
+		
+		// $email = $request->input('email');
+		// $password = $request->input('password');
+		// above replaced by below
+		$credentials = $request->only('email', 'password');
+		
+		try {
+			if (! $token = JWTAuth::attempt($credentials)) {
+				return response()->json(['msg' => "Invalid credentials"], 401);
+			}
+		}
+		catch (JWTException $e) {
+			return response()->json(['msg' => 'Could not create token'], 500);
+		}
+		
+		return response()->json(['token' => $token], 200);
+	}
 }
 
 

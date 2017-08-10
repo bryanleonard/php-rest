@@ -13,9 +13,8 @@ use JWTAuth;
 class RegistrationController extends Controller
 {
 	
-	public function __construct()
-	{
-		//
+	public function __construct(){
+		$this->middleware('jwt.auth');
 	}
 
 	/**
@@ -74,17 +73,20 @@ class RegistrationController extends Controller
 	 */
 	public function destroy($id)
 	{
+		
 		$meeting = Meeting::findOrFail($id);
-		$users = $meeting->users();
-		$meeting->users()->detach();
-
-		if (!$meeting->delete()) {
-			foreach ($users as $user) {
-				$meeting->users()->attach($user);
-			}
-
-			return response()->json(['msg' => 'Deletion failed'], 404);
+return $meeting . " " . $id;
+		
+		// only going to remove logged in user
+		if (!$user = JWTAuth::parseToken()->authenticate()) {
+			return response()->json(['msg' => 'User not found'], 404);
 		}
+
+		if (!$meeting->users()->where('users.id', $user_id)->first()) {
+			return response()->json(['msg' => 'User not registered for the meeting, delete not successful'], 401);
+		}
+
+		$meeting->users()->detach($user->id);
 
 		$response = [
 			'msg' => 'User unregistered for meeting',

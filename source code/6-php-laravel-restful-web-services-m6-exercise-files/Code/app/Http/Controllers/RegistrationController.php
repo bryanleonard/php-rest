@@ -71,6 +71,9 @@ class RegistrationController extends Controller
      */
     public function destroy($id)
     {
+        
+return $id;
+
         $meeting = Meeting::findOrFail($id);
         if (! $user = JWTAuth::parseToken()->authenticate()) {
             return response()->json(['msg' => 'User not found'], 404);
