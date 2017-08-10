@@ -12,7 +12,7 @@ use JWTAuth;
 
 class RegistrationController extends Controller
 {
-	
+
 	public function __construct(){
 		$this->middleware('jwt.auth');
 	}
@@ -42,7 +42,7 @@ class RegistrationController extends Controller
 			'meeting' => $meeting,
 			'unregister' => [
 				'href' => 'api/v1/meeting/registration/' . $meeting->id,
-				'method' => 'DELETE',	 
+				'method' => 'DELETE',
 			]
 		];
 
@@ -59,7 +59,7 @@ class RegistrationController extends Controller
 			'unregister' => [
 				'href' => 'api/v1/meeting/registration/' . $meeting->id,
 				'method' => 'DELETE'
-			]	
+			]
 		];
 
 		return response()->json($response, 201);
@@ -71,18 +71,18 @@ class RegistrationController extends Controller
 	 * @param  int  $id
 	 * @return \Illuminate\Http\Response
 	 */
-	public function destroy($id)
+	 function destroy($id)
 	{
-		
+
 		$meeting = Meeting::findOrFail($id);
-return $meeting . " " . $id;
-		
+
+
 		// only going to remove logged in user
 		if (!$user = JWTAuth::parseToken()->authenticate()) {
 			return response()->json(['msg' => 'User not found'], 404);
 		}
 
-		if (!$meeting->users()->where('users.id', $user_id)->first()) {
+		if (!$meeting->users()->where('users.id', $user->id)->first()) {
 			return response()->json(['msg' => 'User not registered for the meeting, delete not successful'], 401);
 		}
 
